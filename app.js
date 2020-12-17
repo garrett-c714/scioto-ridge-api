@@ -12,3 +12,4 @@ server.listen(port, hostname, () => {
 });
 //Remember to check and save the email links. Look into how that 
 //switch statement stuff could potentially work out.
+//Checking to see if laptop works.
