@@ -10,3 +10,5 @@ const server = http.createServer((request, response) => {
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
+//Remember to check and save the email links. Look into how that 
+//switch statement stuff could potentially work out.
