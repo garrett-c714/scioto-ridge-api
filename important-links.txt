@@ -5,3 +5,5 @@ https://www.digitalocean.com/community/tutorials/how-to-create-a-web-server-in-n
 https://stackoverflow.com/questions/4295782/how-to-process-post-data-in-node-js
 
 https://www.mysqltutorial.org/mysql-nodejs/connect/
+
+so i can remove from main.
