@@ -1,4 +1,5 @@
 const http = require('http');
+const ridesMod = require('./rides');
 const hostname = '127.0.0.1';
 const port = 8000;
 const requestListener = (request, response) => {
@@ -10,7 +11,7 @@ const requestListener = (request, response) => {
             break;
         case "/rides":
             response.writeHead(200);
-            response.end('You have reached the rides page');
+            response.end(ridesMod.test());
             break;
         case "/review":
             response.writeHead(200);
