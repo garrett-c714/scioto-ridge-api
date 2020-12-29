@@ -1,8 +1,10 @@
 const http = require('http');
 const ridesMod = require('./rides');
-//const database = require('./database');
+const sql = require('mysql');
+const database = require('./database');
 const hostname = '127.0.0.1';
 const port = 8000;
+
 const requestListener = (request, response) => {
     response.setHeader('Content-Type', 'text/plain');
     switch (request.url) {
@@ -10,9 +12,17 @@ const requestListener = (request, response) => {
             response.writeHead(200);
             response.end('You have reached the login page');
             break;
-        case "/rides":
+        case "/attractions":
+            response.setHeader('Content-Type', 'application/json');
             response.writeHead(200);
-            response.end(ridesMod.test());
+            //database.waitTimesAll();
+            async function send() {
+                const x = await database.waitTimesAll();
+                console.log(`function returned: ${x}`);
+                response.write('so dumb');
+                response.end();
+            }
+            send();
             break;
         case "/review":
             response.writeHead(200);
