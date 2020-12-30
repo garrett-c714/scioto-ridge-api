@@ -39,13 +39,14 @@ async function send() {
     });
     return response; 
 }
-send()
+module.exports = {send};
+/*send()
 .then(z => {
     console.log(z);
 })
 .catch(err => {
     console.log('fuck');
-})
+})*/
 
 
 

@@ -2,6 +2,7 @@ const http = require('http');
 const ridesMod = require('./rides');
 const sql = require('mysql');
 const database = require('./database');
+const { send } = require('process');
 const hostname = '127.0.0.1';
 const port = 8000;
 
@@ -15,14 +16,17 @@ const requestListener = (request, response) => {
         case "/attractions":
             response.setHeader('Content-Type', 'application/json');
             response.writeHead(200);
-            //database.waitTimesAll();
-            async function send() {
-                const x = await database.waitTimesAll();
-                console.log(`function returned: ${x}`);
-                response.write('so dumb');
+            database.send()
+            .then(result => {
+                //console.log(result);
+                response.write(JSON.stringify(result));
                 response.end();
-            }
-            send();
+            })
+            .catch(error => {
+                console.log(error);
+                response.write('failure');
+                response.end();
+            })
             break;
         case "/review":
             response.writeHead(200);
