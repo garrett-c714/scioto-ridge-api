@@ -1,5 +1,5 @@
-const sql = require('mysql');
 
+const sql = require('mysql');
 const connection = sql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -40,13 +40,7 @@ async function sendWaitTimes() {
     return response;
 }
 module.exports = {sendWaitTimes};
-/*sendWaitTimes()
-.then(z => {
-    console.log(z);
-})
-.catch(err => {
-    console.log('uh oh');
-});*/
+
 
 
 
