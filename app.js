@@ -15,14 +15,15 @@ const requestListener = (request, response) => {
         case "/attractions":
             response.setHeader('Content-Type', 'application/json');
             response.writeHead(200);
-            //database.waitTimesAll();
-            async function send() {
-                const x = await database.waitTimesAll();
-                console.log(`function returned: ${x}`);
-                response.write('so dumb');
+            database.sendWaitTimes()
+            .then(data => {
+                response.write(JSON.stringify(data));
                 response.end();
-            }
-            send();
+            })
+            .catch(err => {
+                response.write('error');
+                response.end();
+            });
             break;
         case "/review":
             response.writeHead(200);
