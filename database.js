@@ -15,30 +15,37 @@ connection.connect((error) => {
     console.log('Connected to Database!');
 });
 
-async function waitTimesAll() {
-    const statement = "SELECT name, wait_time, att_id FROM attractions;";
-    let response = {};
-    connection.query(statement , (error,result) => {
-        if (error) {
-            throw error;
-        }
-        result.forEach(entry => {
-            let indexName = `index${entry.att_id}`;
-            response[indexName] = {
-                name: `${entry.name}`,
-                waitTime: `${entry.wait_time}`,
-            };
+function selectWaitTimes() {
+    const sql = "SELECT * FROM attractions;"
+    return new Promise((resolve, reject) => {
+        connection.query(sql, (error, result) => {
+            if (result == undefined) {
+                reject(new Error('rows is undefined'));
+            } else {
+                resolve(result);
+            }
         });
-        //console.log(JSON.stringify(response));
-        console.log(response);
     });
-    return response;
 }
-module.exports = {waitTimesAll};
-
-
-
-
+async function send() {
+    let response = {};
+    const x = await selectWaitTimes();
+    x.forEach(entry => {
+        let indexName = `index${entry.att_id}`;
+        response[indexName] = {
+            name: `${entry.name}`,
+            waitTime: `${entry.wait_time}`,
+        };
+    });
+    return response; 
+}
+send()
+.then(z => {
+    console.log(z);
+})
+.catch(err => {
+    console.log('fuck');
+})
 
 
 
