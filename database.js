@@ -39,19 +39,6 @@ async function sendWaitTimes() {
     });
     return response;
 }
-module.exports = {sendWaitTimes};
-
-
-
-
-
-
-
-
-/*const statement = "INSERT INTO test_table (column1, column2) VALUES ('test', 'complete')";
-connection.query(statement, (error, result) => {
-    if (error) {
-        throw error;
-    }
-    console.log('record inserted');
-});*/
+module.exports = {
+    sendWaitTimes: sendWaitTimes,
+};

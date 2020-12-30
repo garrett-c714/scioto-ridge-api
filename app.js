@@ -7,6 +7,7 @@ const port = 8000;
 
 const requestListener = (request, response) => {
     response.setHeader('Content-Type', 'text/plain');
+    response.setHeader('Access-Control-Allow-Origin', '*');
     switch (request.url) {
         case "/login":
             response.writeHead(200);
@@ -18,8 +19,7 @@ const requestListener = (request, response) => {
             response.writeHead(200);
             database.sendWaitTimes()
             .then(data => {
-                response.write(JSON.stringify(data));
-                response.end();
+                response.end(JSON.stringify(data));
             })
             .catch(err => {
                 response.write('error');
@@ -29,7 +29,7 @@ const requestListener = (request, response) => {
 
         case "/review":
             response.writeHead(200);
-            response.end('You have reached the reivew page');
+            response.end('You have reached the review page');
             break;
 
         case "/db-input":
