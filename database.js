@@ -16,9 +16,9 @@ connection.connect((error) => {
 });
 
 function selectWaitTimes() {
-    const sql = "SELECT name, wait_time, att_id FROM attractions;";
+    const query = "SELECT name, wait_time, att_id FROM attractions;";
     return new Promise((resolve, reject) => {
-        connection.query(sql, (error, result) => {
+        connection.query(query, (error, result) => {
             if (result == undefined) {
                 reject(new Error('rows is undefined'));
             } else {

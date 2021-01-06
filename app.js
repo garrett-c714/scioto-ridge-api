@@ -1,17 +1,33 @@
 const http = require('http');
-const ridesMod = require('./rides');
 const sql = require('mysql');
 const database = require('./database');
+const bodyParser = require('body-parser');
 const hostname = '127.0.0.1';
 const port = 8000;
 
 const requestListener = (request, response) => {
     response.setHeader('Content-Type', 'text/plain');
     response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST');
     switch (request.url) {
         case "/login":
-            response.writeHead(200);
-            response.end('You have reached the login page');
+            switch (request.method){
+                case "GET":
+                    response.setHeader('Content-Type', 'application/json');
+                    response.writeHead(200);
+                    response.end(JSON.stringify({hello: 'yes'}));
+                    break;
+                case "POST":
+                    response.setHeader('Content-Type', 'application/json');
+                    response.writeHead(200);
+                    console.log(request.body);
+                    response.end();
+                    break;
+                default: 
+                    response.writeHead(404);
+                    response.end('used method not found');
+                    break;
+            }
             break;
             
         case "/attractions":
