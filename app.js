@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const sql = require('mysql');
 const database = require('./database');
+const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use((request, response, next) => {
@@ -47,7 +48,7 @@ app.route('/login')
     });
   });
 
-app.listen(3000, () => {
-    console.log('Server Listening at http://127.0.0.1:3000');
+app.listen(PORT, () => {
+    console.log(`Server Listening at ${PORT}`);
 });
 
