@@ -39,6 +39,20 @@ async function sendWaitTimes() {
     });
     return response;
 }
+function insertUser(newUser) {
+    const query = `INSERT INTO users (first_name, last_name, email, password) VALUES ('${newUser.fName}', '${newUser.lName}', '${newUser.email}','${newUser.password}');`
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                console.log('Inserted Successfully into Database!');
+                resolve('success');
+            }
+        });
+    });
+}
 module.exports = {
-    sendWaitTimes: sendWaitTimes,
+    sendWaitTimes,
+    insertUser
 };
