@@ -1,0 +1,23 @@
+{
+  "name": "scioto-ridge-api",
+  "version": "1.0.0",
+  "description": "Created for BPA 2020-21 Web Application Team",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/garrett-c714/API.git"
+  },
+  "author": "Garrett Cox",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/garrett-c714/API/issues"
+  },
+  "homepage": "https://github.com/garrett-c714/API#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  }
+}
