@@ -1,19 +1,19 @@
 
 const sql = require('mysql');
 const connection = sql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'data-password',
-    database: 'scioto_ridge',
+    host: 'jhdjjtqo9w5bzq2t.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+    user: 'q4xk0vnlnhbctf2s',
+    password: 'vn7zkmjduxjcdrp6',
+    database: 'z2wyj04z0qj7sj68',
     insecureAuth: true
 });
 
-/*connection.connect((error) => {
+connection.connect((error) => {
     if (error) {
         throw error;
     }
     console.log('Connected to Database!');
-});*/
+});
 
 function selectWaitTimes() {
     const query = "SELECT name, wait_time, att_id FROM attractions;";
