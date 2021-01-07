@@ -8,12 +8,12 @@ const connection = sql.createConnection({
     insecureAuth: true
 });
 
-connection.connect((error) => {
+/*connection.connect((error) => {
     if (error) {
         throw error;
     }
     console.log('Connected to Database!');
-});
+});*/
 
 function selectWaitTimes() {
     const query = "SELECT name, wait_time, att_id FROM attractions;";
