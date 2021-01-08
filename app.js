@@ -23,7 +23,17 @@ app.get('/attractions', (request, response) => {
     });
 });
 app.get('/attractions/:id', (request,response) => {
-    response.send(`The info for attraction with ID ${request.params.id}`);
+    database.oneWaitTime(Number.parseInt(request.params.id, 10))
+    .then(data => {
+        response.json({
+            id: `${data[0].att_id}`,
+            name: `${data[0].name}`,
+            waitTime: `${data[0].wait_time}`
+        });
+    })
+    .catch(err => {
+        response.send(err);
+    })
 });
 
 app.get('/review', (request, response) => {

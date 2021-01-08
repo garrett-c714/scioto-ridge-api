@@ -27,6 +27,18 @@ function selectWaitTimes() {
         });
     });
 }
+function oneWaitTime(id) {
+    const query = `SELECT * FROM attractions WHERE att_id = '${id}'`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (result === undefined) {
+                reject(new Error('Result is undefined'));
+            } else {
+                resolve(result);
+            }
+        });
+    });
+}
 async function sendWaitTimes() {
     let response = {};
     const rawData = await selectWaitTimes();
@@ -54,5 +66,6 @@ function insertUser(newUser) {
 }
 module.exports = {
     sendWaitTimes,
-    insertUser
+    insertUser,
+    oneWaitTime
 };
