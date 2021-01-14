@@ -20,8 +20,7 @@ app.get('/', (request, response) => {
 
 /*Test route -- remove later */
 app.get('/cookie', (request, response) => {
-    response.cookie('testCookie', 'value',{ sameSite: 'strict', httpOnly: false, domain: 'http://127.0.0.1:5000'});
-    response.json({cookie: 'set'});
+    response.cookie('testCookie', 'value',{sameSite:'none', httpOnly: false}).json({cookie: 'set'});
 });
 app.get('/cookie/read', (request, response) => {
     console.log(request.cookies["testCookie"]);
