@@ -1,14 +1,16 @@
 const express = require('express');
-const app = express();
-const sql = require('mysql');
 const database = require('./database');
+const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 5000;
 
+const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use((request, response, next) => {
-    response.setHeader('Access-Control-Allow-Origin','*');
+    response.setHeader('Access-Control-Allow-Origin','http://localhost:8080');
     response.setHeader('Access-Control-Allow-Methods', 'GET,POST');
     response.setHeader('Access-Control-Allow-Headers','content-type');
+    response.setHeader('Access-Control-Allow-Credentials', 'true');
     next();
 });
 
@@ -16,6 +18,16 @@ app.get('/', (request, response) => {
     response.send('Scioto Ridge API');
 });
 
+/*Test route -- remove later */
+app.get('/cookie', (request, response) => {
+    response.cookie('testCookie', 'value',{ sameSite: 'strict', httpOnly: false, domain: 'http://127.0.0.1:5000'});
+    response.json({cookie: 'set'});
+});
+app.get('/cookie/read', (request, response) => {
+    console.log(request.cookies["testCookie"]);
+    response.send('stupid');
+});
+/*--------------*/
 app.get('/attractions', (request, response) => {
     database.sendWaitTimes()
     .then(data => {
