@@ -1,11 +1,12 @@
 const express = require('express');
-const database = require('./database');
 const cookieParser = require('cookie-parser');
-const PORT = process.env.PORT || 5000;
+const database = require('./database');
 
+const PORT = process.env.PORT || 5000;
 const app = express();
+
 app.use(express.json());
-app.use(cookieParser());
+app.use(cookieParser('multimedians21'));
 app.use((request, response, next) => {
     response.setHeader('Access-Control-Allow-Origin','http://localhost:8080');
     response.setHeader('Access-Control-Allow-Methods', 'GET,POST');
@@ -18,6 +19,28 @@ app.get('/', (request, response) => {
     response.send('Scioto Ridge API');
 });
 
+app.route('/login')
+  .get((request, response) => {
+      response.send('Login Page GET');
+  })
+  .post((request, response) => {
+      console.log(request.body);
+      response.json({cool: 'beans'});
+  });
+
+app.post('/login/new', (request, response) => {
+    database.insertUser(request.body)
+    .then(response.json({success: 'true'}))
+    .catch(err => {
+        console.log(err);
+        response.json({sucess: 'false'});
+    });
+});
+
+/*------ Start Protected Routes ------*/
+
+
+
 /*Test route -- remove later */
 app.get('/cookie', (request, response) => {
     response.cookie('testCookie', 'value',{sameSite:'none', httpOnly: false}).json({cookie: 'set'});
@@ -27,6 +50,8 @@ app.get('/cookie/read', (request, response) => {
     response.send('stupid');
 });
 /*--------------*/
+
+
 app.get('/attractions', (request, response) => {
     database.sendWaitTimes()
     .then(data => {
@@ -49,25 +74,7 @@ app.get('/attractions/:id', (request,response) => {
 
 app.get('/review', (request, response) => {
     response.send('You have reached the review page.');
-})
-
-app.route('/login')
-  .get((request, response) => {
-      response.send('Login Page GET');
-  })
-  .post((request, response) => {
-      console.log(request.body);
-      response.json({cool: 'beans'});
-  });
-
-  app.post('/login/new', (request, response) => {
-    database.insertUser(request.body)
-    .then(response.json({success: 'true'}))
-    .catch(err => {
-        console.log(err);
-        response.json({sucess: 'false'});
-    });
-  });
+});
 
 app.listen(PORT, () => {
     console.log(`Server Listening at ${PORT}`);

@@ -64,6 +64,20 @@ function insertUser(newUser) {
         });
     });
 }
+
+function generateSession() {
+    return Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
+}
+function insertSession() {
+    return new Promise((resolve, reject) => {
+        const session = generateSession();
+        console.log(`${session} inserted into database`);
+        resolve(session);
+    });
+}
+async function sessionData(user) {
+    const session = await insertSession();
+}
 module.exports = {
     sendWaitTimes,
     insertUser,
