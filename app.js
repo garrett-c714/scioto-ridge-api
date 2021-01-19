@@ -18,14 +18,19 @@ app.use((request, response, next) => {
 app.get('/', (request, response) => {
     response.send('Scioto Ridge API');
 });
+app.get('/test', (request, response) => {
+    response.send('test complete');
+})
 
-app.route('/login')
-  .get((request, response) => {
-      response.send('Login Page GET');
-  })
-  .post((request, response) => {
-      console.log(request.body);
-      response.json({cool: 'beans'});
+app.post(('/login'), (request, response) => {
+     console.log('login request');
+     database.login(request.body.email, request.body.pass)
+     .then(success => {
+         response.json({sucess: 'true'});
+     })
+     .catch(error => {
+        response.json({success: 'false'});
+     });
   });
 
 app.post('/login/new', (request, response) => {
@@ -38,7 +43,18 @@ app.post('/login/new', (request, response) => {
 });
 
 /*------ Start Protected Routes ------*/
-
+/*app.get('/jail', (request,response) => {
+    response.status(403).end();
+});
+app.use((request, response, next) => {
+    if (false) {
+        console.log('security checkpoint passed');
+        next();
+    } else {
+        console.log('what');
+        response.redirect('/jail');
+    }
+});*/
 
 
 /*Test route -- remove later */
