@@ -1,4 +1,7 @@
-const creds = require('./creds');
+const port = require('./app');
+if (port.PORT === 5000) {
+    const creds = require('./creds');
+}
 const sql = require('mysql');
 const database = process.env.JAWSDB_URL || creds.database;
 const connection = sql.createConnection(database);
