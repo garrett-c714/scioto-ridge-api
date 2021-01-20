@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const database = require('./database');
+const { response } = require('express');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -22,17 +23,25 @@ app.get('/test', (request, response) => {
     response.send('test complete');
 })
 
-app.post(('/login'), (request, response) => {
+app.post('/login', (request, response) => {
      console.log('login request');
      database.login(request.body.email, request.body.pass)
-     .then(success => {
-         response.json({sucess: 'true'});
+     .then(userID => {
+         database.insertSession(userID)
+         .then(session => {
+             console.log('made it here');
+             response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: false}).json({success: 'true'});
+         })
+         .catch(error => {
+             console.log('something went wrong');
+         })
      })
      .catch(error => {
-        response.json({success: 'false'});
+         console.log('incorrect');
+         //console.log(error);
+         response.json({success: 'false'});
      });
   });
-
 app.post('/login/new', (request, response) => {
     database.insertUser(request.body)
     .then(response.json({success: 'true'}))
@@ -41,18 +50,20 @@ app.post('/login/new', (request, response) => {
         response.json({sucess: 'false'});
     });
 });
+app.get('/login/v', (request, response) => {
+    console.log(request.cookies['loginCookie']);
+    response.json({user: 'Colin Decker'});
+});
 
 /*------ Start Protected Routes ------*/
-/*app.get('/jail', (request,response) => {
-    response.status(403).end();
-});
-app.use((request, response, next) => {
+
+/*app.use((request, response, next) => {
     if (false) {
         console.log('security checkpoint passed');
         next();
     } else {
-        console.log('what');
-        response.redirect('/jail');
+        console.log('caught at security checkpoint');
+        response.status(403).end();
     }
 });*/
 
@@ -95,7 +106,3 @@ app.get('/review', (request, response) => {
 app.listen(PORT, () => {
     console.log(`Server Listening at ${PORT}`);
 });
-
-module.exports = {
-    PORT
-}

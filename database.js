@@ -4,6 +4,7 @@ function requirePath(modulePath) {
         return require(modulePath);
     } catch(error) {
         console.log('path not found');
+        return false;
     }
 }
 const creds = requirePath('./creds');
@@ -71,10 +72,10 @@ function insertUser(newUser) {
 function generateSession() {
     return Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
 }
-function insertSession() {
+function insertSession(userID) {
     return new Promise((resolve, reject) => {
         const session = generateSession();
-        const query = `INSERT INTO sessions (session_id, user) VALUES ('${session}', '1001');`;
+        const query = `INSERT INTO sessions (session_id, user) VALUES ('${session}', '${userID}');`;
         console.log(`${session} inserted into database`);
         connection.query(query, (error, result) => {
             if (error) {
@@ -89,16 +90,19 @@ async function sessionData(user) {
 }
 
 function login(email, password) {
-    const query = `SELECT password FROM users WHERE email = ${email};`;
+    const query = `SELECT password, user_id FROM users WHERE email = '${email}';`;
     return new Promise((resolve,reject) => {
         connection.query(query, (error,result) => {
+            console.log(email);
             if (error) {
                 reject(new Error('selection failed'));
+            } else if (result[0] == undefined) {
+                reject(new Error('invalid email'));
             } else {
-                if (result[0].password === password) {
-                    resolve('success');
+                if (password === result[0].password) {
+                    resolve(result[0].user_id);
                 } else {
-                    reject('invalid email or password');
+                    reject(new Error('invalid password'));
                 }
             }
         });
@@ -108,5 +112,6 @@ module.exports = {
     sendWaitTimes,
     insertUser,
     oneWaitTime,
-    login
+    login,
+    insertSession
 };
