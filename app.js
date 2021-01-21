@@ -123,7 +123,9 @@ app.get('/attractions/:id', (request,response) => {
 app.get('/review', (request, response) => {
     response.send('You have reached the review page.');
 });
-
+app.post('/review/:id', (request, response) => {
+    response.send('placeholder')
+});
 app.listen(PORT, () => {
     console.log(`Server Listening at ${PORT}`);
 });
