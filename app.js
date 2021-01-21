@@ -124,7 +124,28 @@ app.get('/review', (request, response) => {
     response.send('You have reached the review page.');
 });
 app.post('/review/:id', (request, response) => {
-    response.send('placeholder')
+    const attID = request.params.id;
+    const rating = request.body.rating;
+    database.insertStarReview(attID, rating)
+    .then(z => {
+        response.json({success: 'true'})
+    })
+    .catch(error => {
+        console.log('error');
+        response.json({success: 'false'});
+    })
+});
+app.get('/review/get/:id', (request, response) => {
+    const attID = request.params.id;
+    database.getStarReview(attID)
+    .then(numbers => {
+        numbers.success = 'true';
+        response.json(numbers);
+    })
+    .catch(error => {
+        console.log(error);
+        response.json({success: 'false'});
+    });
 });
 app.listen(PORT, () => {
     console.log(`Server Listening at ${PORT}`);

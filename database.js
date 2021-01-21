@@ -156,6 +156,37 @@ function deleteSession(sessionID) {
         });
     });
 }
+
+function getStarReview(attID) {
+    const query = `SELECT (num_stars, num_reviews) FROM attraction_reviews WHERE id = '${attID}';`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('selection failed'));
+            } else {
+                resolve({
+                    stars: `${result[0].num_stars}`,
+                    reviews: `${result[0].num_reviews}`
+                });
+            }
+        });
+    });
+}
+async function insertStarReview(attID, rating) {
+    const oldNumbers = await getStarReview(attID);
+    oldNumbers.stars += rating;
+    oldNumbers.reviews++;
+    const query = `UPDATE attraction_reviews SET num_stars = ${oldNumbers.stars} WHERE id = '${attID}'; UPDATE attraction_reviews SET num_reviews = ${oldNumbers.reviews} WHERE id = '${attID}';`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('review insertion failed'));
+            } else {
+                resolve();
+            }
+        });
+    });
+}
 module.exports = {
     sendWaitTimes,
     insertUser,
@@ -163,5 +194,7 @@ module.exports = {
     login,
     insertSession,
     returnSession,
-    deleteSession
+    deleteSession,
+    getStarReview,
+    insertStarReview
 };
