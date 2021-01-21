@@ -147,6 +147,16 @@ app.get('/review/get/:id', (request, response) => {
         response.json({success: 'false'});
     });
 });
+app.post('/reserve', (request, response) => {
+    response.send('reserve page');
+});
+
+app.get('/report', (request, response) => {
+    response.send('report page')
+});
+
+
+
 app.listen(PORT, () => {
     console.log(`Server Listening at ${PORT}`);
 });
