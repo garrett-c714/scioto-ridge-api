@@ -158,11 +158,12 @@ function deleteSession(sessionID) {
 }
 
 function getStarReview(attID) {
-    const query = `SELECT (num_stars, num_reviews) FROM attraction_reviews WHERE id = '${attID}';`;
+    const query = `SELECT num_stars, num_reviews FROM attraction_reviews WHERE id = '${attID}';`;
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                reject(new Error('selection failed'));
+                //reject(new Error('selection failed'));
+                throw error;
             } else {
                 resolve({
                     stars: `${result[0].num_stars}`,
