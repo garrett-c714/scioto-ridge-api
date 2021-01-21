@@ -21,7 +21,7 @@ app.get('/', (request, response) => {
 });
 app.get('/test', (request, response) => {
     response.send('test complete');
-})
+});
 
 app.post('/login', (request, response) => {
      console.log('login request');
@@ -51,8 +51,29 @@ app.post('/login/new', (request, response) => {
     });
 });
 app.get('/login/v', (request, response) => {
-    console.log(request.cookies['loginCookie']);
-    response.json({user: 'Colin Decker'});
+    const sess = request.cookies['loginCookie'];
+    database.returnSession(sess)
+    .then(user => {
+        user.session = 'true';
+        console.log('made it this far');
+        console.log(user);
+        response.json(user);
+    })
+    .catch(error => {
+        console.log('error somewhere');
+        response.json({session: 'false'});
+    })
+});
+app.get('/logout', (request, response) => {
+    const sess = request.cookies['loginCookie'];
+    database.deleteSession(sess)
+    .then(z => {
+        response.json({success: 'true'});
+    })
+    .catch(error => {
+        console.log(error);
+        response.json({success: 'false'});
+    })
 });
 
 /*------ Start Protected Routes ------*/

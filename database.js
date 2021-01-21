@@ -75,7 +75,7 @@ function generateSession() {
 function insertSession(userID) {
     return new Promise((resolve, reject) => {
         const session = generateSession();
-        const query = `INSERT INTO sessions (session_id, user) VALUES ('${session}', '${userID}');`;
+        const query = `DELETE FROM sessions WHERE user = '${userID}'; INSERT INTO sessions (session_id, user) VALUES ('${session}', '${userID}');`;
         console.log(`${session} inserted into database`);
         connection.query(query, (error, result) => {
             if (error) {
@@ -85,9 +85,7 @@ function insertSession(userID) {
         resolve(session);
     });
 }
-async function sessionData(user) {
-    const session = await insertSession();
-}
+
 
 function login(email, password) {
     const query = `SELECT password, user_id FROM users WHERE email = '${email}';`;
@@ -108,10 +106,62 @@ function login(email, password) {
         });
     });
 }
+function validateSession(sessionID) {
+    const query = `SELECT user FROM sessions WHERE session_id = '${sessionID}';`;
+    return new Promise((resolve, reject) => {
+        connection.query(query,(error, result) => {
+            if (error) {
+                reject(new Error('selection failed'));
+            } else if (result[0] == undefined){
+                reject(new Error('no session'));
+            } else {
+                resolve(result[0].user);
+            }
+        });
+    });
+}
+function returnSession(sessionID) {
+    return new Promise((resolve, reject) => {
+        validateSession(sessionID)
+        .then(userID => {
+            const query = `SELECT first_name, last_name FROM users WHERE user_id = '${userID}';`
+            connection.query(query, (error, result) => {
+                if (error) {
+                    reject(new Error('selection failed'));
+                } else if (result[0].first_name == undefined) {
+                    reject(new Error('no data associated with user'));
+                } else {
+                    resolve({
+                        firstName: `${result[0].first_name}`,
+                        lastName: `${result[0].last_name}`
+                    });
+                }
+            });
+        })
+        .catch(error => {
+            //no session, nothing really to catch.
+        });
+    });
+}
+function deleteSession(sessionID) {
+    const query = `DELETE FROM sessions WHERE session_id = '${sessionID}'`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('deletion failed'));
+                //throw error;
+            } else {
+                resolve('successfully deleted from the sessions');
+            }
+        });
+    });
+}
 module.exports = {
     sendWaitTimes,
     insertUser,
     oneWaitTime,
     login,
-    insertSession
+    insertSession,
+    returnSession,
+    deleteSession
 };
