@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const database = require('./database');
+const info = require('./info');
 const { response } = require('express');
 
 const PORT = process.env.PORT || 5000;
@@ -148,7 +149,39 @@ app.get('/review/get/:id', (request, response) => {
     });
 });
 app.post('/reserve', (request, response) => {
-    response.send('reserve page');
+    const sess = request.cookies["loginCookie"];
+    const att = request.body.attraction;
+    const time = request.body.time;
+    database.validateSession(sess)
+    .then(user => {
+        database.insertRes(user, att, time)
+        .then(() => {
+            response.json({success: 'true'});
+        })
+        .catch(error => {
+            console.log(error);
+            response.json({success: 'false'});
+        });
+    });
+});
+app.get('/reserve/forbidden', (request, response) => {
+    const sess = request.cookies["loginCookie"];
+    database.forbiddenTimes(sess)
+    .then(indexes => {
+        let times = [];
+        indexes.forEach(index => {
+            if (info.reserveTimes[index] == undefined || times.contains(info.reserveTimes[index])) {
+                //do nothing
+            } else {
+                times.push(info.reserveTimes[index]);
+            }
+        });
+        response.json({success:'true',unavailableTimes: times});
+    })
+    .catch(error => {
+        console.log(error);
+        response.json({success: 'false'});
+    });
 });
 
 app.get('/report', (request, response) => {

@@ -8,6 +8,7 @@ function requirePath(modulePath) {
     }
 }
 const creds = requirePath('./creds');
+const info = require('./info');
 const sql = require('mysql');
 const database = process.env.JAWSDB_URL || creds.database;
 const connection = sql.createConnection(database);
@@ -162,8 +163,8 @@ function getStarReview(attID) {
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                //reject(new Error('selection failed'));
-                throw error;
+                reject(new Error('selection failed'));
+                //throw error;
             } else {
                 resolve({
                     stars: `${result[0].num_stars}`,
@@ -188,6 +189,46 @@ async function insertStarReview(attID, rating) {
         });
     });
 }
+function insertRes(user, attraction, time) {
+    const query = `INSERT INTO reservations (user, attraction, time) VALUES ('${user}', '${attraction}','${time}');`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('insertion failed'));
+                //throw error;
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+function findTimes(user) {
+    const query = `SELECT time FROM reservations WHERE user = '${user}';`;
+    let times = [];
+    return new Promise((resolve, reject) => {
+      connection.query(query, (error, result) => {
+          if (error) {
+              reject(new Error('selection failed for times'));
+          } else {
+              result.forEach(entry => {
+                  times.push(entry.time);
+              });
+              resolve(times);
+          }
+      });  
+    }); 
+}
+async function forbiddenTimes(user) {
+    const times = await findTimes(user);
+    const indexes = [];
+    times.forEach(time => {
+        const temp = info.reserveTimes.indexOf(time);
+        for (let i = -3; i<4; i++) {
+            indexes.push(`${temp+i}`);
+        }
+    });
+    return indexes;
+}
 module.exports = {
     sendWaitTimes,
     insertUser,
@@ -197,5 +238,7 @@ module.exports = {
     returnSession,
     deleteSession,
     getStarReview,
-    insertStarReview
+    insertStarReview,
+    insertRes,
+    forbiddenTimes
 };
