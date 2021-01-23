@@ -152,7 +152,7 @@ function returnSession(sessionID) {
             });
         })
         .catch(error => {
-            //no session, nothing really to catch.
+            reject(new Error('no session'));
         });
     });
 }
