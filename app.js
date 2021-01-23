@@ -166,17 +166,24 @@ app.post('/reserve', (request, response) => {
 });
 app.get('/reserve/forbidden', (request, response) => {
     const sess = request.cookies["loginCookie"];
-    database.forbiddenTimes(sess)
-    .then(indexes => {
-        let times = [];
-        indexes.forEach(index => {
-            if (info.reserveTimes[index] == undefined || times.contains(info.reserveTimes[index])) {
-                //do nothing
-            } else {
-                times.push(info.reserveTimes[index]);
-            }
+    database.validateSession(sess)
+    .then(user => {
+        database.forbiddenTimes(sess)
+        .then(indexes => {
+            let times = [];
+            indexes.forEach(index => {
+                if (info.reserveTimes[index] == undefined || times.contains(info.reserveTimes[index])) {
+                    //do nothing
+                } else {
+                    times.push(info.reserveTimes[index]);
+                }
+            });
+            response.json({success:'true',unavailableTimes: times});
+        })
+        .catch(error => {
+            console.log(error);
+            response.json({success: 'false'});
         });
-        response.json({success:'true',unavailableTimes: times});
     })
     .catch(error => {
         console.log(error);
@@ -185,7 +192,23 @@ app.get('/reserve/forbidden', (request, response) => {
 });
 
 app.get('/report', (request, response) => {
-    response.send('report page')
+    const sess = request.cookies["loginCookie"];
+    database.validateSession(sess)
+    .then(user => {
+        database.generateReport(user)
+        .then(array => {
+            //console.log(array);
+            response.json({success: 'true', reservations: array});
+        })
+        .catch(error => {
+            console.log(error);
+            response.json({success: 'false'});
+        });
+    })
+    .catch(error => {
+        console.log(error);
+        response.json({success: 'false'});
+    })
 });
 
 

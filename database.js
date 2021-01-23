@@ -229,6 +229,27 @@ async function forbiddenTimes(user) {
     });
     return indexes;
 }
+
+
+function generateReport(user) {
+    const query = `SELECT attraction, time FROM reservations WHERE user = '${user}';`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('selection of reservations failed'));
+            } else {
+                let array = [];
+                result.forEach(row => {
+                    let temp = {};
+                    temp.attraction = `${info.attractions[row.attraction-1]}`;
+                    temp.time = row.time;
+                    array.push(temp);
+                });
+                resolve(array);
+            }
+        });
+    });
+}
 module.exports = {
     sendWaitTimes,
     insertUser,
@@ -240,5 +261,6 @@ module.exports = {
     getStarReview,
     insertStarReview,
     insertRes,
-    forbiddenTimes
+    forbiddenTimes,
+    generateReport
 };
