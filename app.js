@@ -28,27 +28,47 @@ app.post('/login', (request, response) => {
      console.log('login request');
      database.login(request.body.email, request.body.pass)
      .then(userID => {
+         //console.log('made it this far');
          database.insertSession(userID)
          .then(session => {
-             console.log('made it here');
+             //console.log('made it here');
              response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: false}).json({success: 'true'});
          })
          .catch(error => {
              console.log('something went wrong');
-         })
+         });
      })
      .catch(error => {
          console.log('incorrect');
-         //console.log(error);
+         console.log(error);
          response.json({success: 'false'});
      });
   });
 app.post('/login/new', (request, response) => {
     database.insertUser(request.body)
-    .then(response.json({success: 'true'}))
+    .then(() => {
+        database.login(request.body.email, request.body.password)
+        .then((userID) => {
+            database.insertSession(userID)
+            .then(session => {
+                console.log('made it here --- login/new');
+                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: false}).json({success: 'true'});
+            })
+            .catch(error => {
+                console.log('error login/new -- insert session');
+                console.log(error);
+                response.json({success: 'false'});
+            });
+        })
+        .catch(error => {
+            console.log('error login/new -- login');
+            console.log(error);
+            response.json({success: 'false'});
+        });
+    })
     .catch(err => {
         console.log(err);
-        response.json({sucess: 'false'});
+        response.json({success: 'false'});
     });
 });
 app.get('/login/v', (request, response) => {
@@ -56,8 +76,8 @@ app.get('/login/v', (request, response) => {
     database.returnSession(sess)
     .then(user => {
         user.session = 'true';
-        console.log('made it this far');
-        console.log(user);
+        //console.log('made it this far');
+        //console.log(user);
         response.json(user);
     })
     .catch(error => {

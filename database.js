@@ -86,9 +86,10 @@ function generateSession() {
     return Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
 }
 function insertSession(userID) {
+    deleteSessionByUser(userID);
     return new Promise((resolve, reject) => {
         const session = generateSession();
-        const query = `DELETE FROM sessions WHERE user = '${userID}'; INSERT INTO sessions (session_id, user) VALUES ('${session}', '${userID}');`;
+        const query = `INSERT INTO sessions (session_id, user) VALUES ('${session}', '${userID}');`;
         console.log(`${session} inserted into database`);
         connection.query(query, (error, result) => {
             if (error) {
@@ -98,7 +99,6 @@ function insertSession(userID) {
         resolve(session);
     });
 }
-
 
 function login(email, password) {
     const query = `SELECT password, user_id FROM users WHERE email = '${email}';`;
@@ -158,6 +158,19 @@ function returnSession(sessionID) {
 }
 function deleteSession(sessionID) {
     const query = `DELETE FROM sessions WHERE session_id = '${sessionID}'`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('deletion failed'));
+                //throw error;
+            } else {
+                resolve('successfully deleted from the sessions');
+            }
+        });
+    });
+}
+function deleteSessionByUser(userID) {
+    const query = `DELETE FROM sessions WHERE user = '${userID}'`;
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
