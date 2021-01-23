@@ -56,6 +56,18 @@ async function sendWaitTimes() {
     });
     return response;
 }
+const changeTime = (attraction, newTime, isClosed) => {
+    const query = `UPDATE attractions SET wait_time = ${newTime} WHERE att_id = '${attraction}'; UPDATE attractions SET is_closed = ${isClosed} WHERE att_id = '${attraction}';`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('update wait time failed'));
+            } else {
+                resolve();
+            }
+        });
+    });
+}
 function insertUser(newUser) {
     const query = `INSERT INTO users (first_name, last_name, email, password) VALUES ('${newUser.fName}', '${newUser.lName}', '${newUser.email}','${newUser.password}');`
     return new Promise((resolve, reject) => {
@@ -262,5 +274,6 @@ module.exports = {
     insertStarReview,
     insertRes,
     forbiddenTimes,
-    generateReport
+    generateReport,
+    changeTime
 };

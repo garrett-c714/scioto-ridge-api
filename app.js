@@ -120,6 +120,20 @@ app.get('/attractions/:id', (request,response) => {
         response.send(err);
     })
 });
+app.post('/change-attraction', (request, response) => {
+    const attraction = request.body.attraction;
+    const newTime = request.body.time;
+    const isClosed = request.body.isClosed;
+    database.changeTime(attraction, newTime, isClosed)
+    .then(() => {
+        response.json({success: 'true'});
+    })
+    .catch(error => {
+        console.log(error);
+        response.json({success: 'false'});
+    });
+});
+
 
 app.get('/review', (request, response) => {
     response.send('You have reached the review page.');
