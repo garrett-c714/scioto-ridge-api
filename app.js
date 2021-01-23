@@ -81,7 +81,7 @@ app.get('/login/v', (request, response) => {
         response.json(user);
     })
     .catch(error => {
-        console.log('error somewhere');
+        console.log('login not validated');
         response.json({session: 'false'});
     })
 });
