@@ -186,9 +186,10 @@ app.post('/reserve', (request, response) => {
     const sess = request.cookies["loginCookie"];
     const att = request.body.attraction;
     const time = request.body.time;
+    const size = request.body.size;
     database.validateSession(sess)
     .then(user => {
-        database.insertRes(user, att, time)
+        database.insertRes(user, att, time, size)
         .then(() => {
             response.json({success: 'true'});
         })

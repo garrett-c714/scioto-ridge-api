@@ -214,13 +214,13 @@ async function insertStarReview(attID, rating) {
         });
     });
 }
-function insertRes(user, attraction, time) {
-    const query = `INSERT INTO reservations (user, attraction, time) VALUES ('${user}', '${attraction}','${time}');`;
+function insertRes(user, attraction, time, groupSize) {
+    const query = `INSERT INTO reservations (user, attraction, time, group_size) VALUES ('${user}', '${attraction}','${time}','${groupSize}');`;
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                reject(new Error('insertion failed'));
-                //throw error;
+                //reject(new Error('insertion failed'));
+                throw error;
             } else {
                 resolve();
             }
@@ -283,6 +283,7 @@ module.exports = {
     insertSession,
     returnSession,
     deleteSession,
+    validateSession,
     getStarReview,
     insertStarReview,
     insertRes,
