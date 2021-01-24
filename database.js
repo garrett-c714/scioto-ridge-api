@@ -214,15 +214,19 @@ async function insertStarReview(attID, rating) {
         });
     });
 }
+const generateConfirmation = () => {
+    return `${Math.round(Math.random()*899+100)}-${Math.round(Math.random()*899+1)}`;
+}
 function insertRes(user, attraction, time, groupSize) {
-    const query = `INSERT INTO reservations (user, attraction, time, group_size) VALUES ('${user}', '${attraction}','${time}','${groupSize}');`;
+    const confirmation = generateConfirmation();
+    const query = `INSERT INTO reservations (user, attraction, time, group_size, confirmation) VALUES ('${user}', '${attraction}','${time}','${groupSize}','${confirmation}');`;
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
                 //reject(new Error('insertion failed'));
                 throw error;
             } else {
-                resolve();
+                resolve(confirmation);
             }
         });
     });
@@ -235,9 +239,11 @@ function findTimes(user) {
           if (error) {
               reject(new Error('selection failed for times'));
           } else {
+              //console.log(`Result: ${result}`);
               result.forEach(entry => {
                   times.push(entry.time);
               });
+              //console.log(times);
               resolve(times);
           }
       });  
@@ -252,6 +258,7 @@ async function forbiddenTimes(user) {
             indexes.push(`${temp+i}`);
         }
     });
+    //console.log(indexes);
     return indexes;
 }
 

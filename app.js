@@ -190,8 +190,8 @@ app.post('/reserve', (request, response) => {
     database.validateSession(sess)
     .then(user => {
         database.insertRes(user, att, time, size)
-        .then(() => {
-            response.json({success: 'true'});
+        .then(conf => {
+            response.json({success: 'true',confirmation: `${conf}`});
         })
         .catch(error => {
             console.log(error);
@@ -203,11 +203,11 @@ app.get('/reserve/forbidden', (request, response) => {
     const sess = request.cookies["loginCookie"];
     database.validateSession(sess)
     .then(user => {
-        database.forbiddenTimes(sess)
+        database.forbiddenTimes(user)
         .then(indexes => {
             let times = [];
             indexes.forEach(index => {
-                if (info.reserveTimes[index] == undefined || times.contains(info.reserveTimes[index])) {
+                if (info.reserveTimes[index] == undefined || times.includes(info.reserveTimes[index])) {
                     //do nothing
                 } else {
                     times.push(info.reserveTimes[index]);
