@@ -3,5 +3,6 @@ const reserveTimes = ['11:00','11:10','11:20','11:30','11:40', '11:50', '12:00',
 const attractions = ['Roller Coaster','Ferris Wheel','Swings','Rocket Ship','Sling Shot','Haunted Castle Ride','Parachute Drop','Merry-Go-Round','Antique Cars','Cage Ride','Train','Boats','Chuck Wagon','Dogs to Go','Chickens-R-Us','Easy as Pie Diner','Forever Cool Ice Cream'];
 
 module.exports = {
-    reserveTimes
+    reserveTimes,
+    attractions
 }

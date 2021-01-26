@@ -81,7 +81,19 @@ function insertUser(newUser) {
         });
     });
 }
-
+const getEmail = user => {
+    const query = `SELECT email FROM users WHERE user_id = '${user}';`;
+    return new Promise((resolve,reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('email selectio failed'));
+                //throw error;
+            } else {
+                resolve(result[0].email);
+            }
+        });
+    });
+}
 function generateSession() {
     return Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
 }
@@ -264,7 +276,7 @@ async function forbiddenTimes(user) {
 
 
 function generateReport(user) {
-    const query = `SELECT attraction, time FROM reservations WHERE user = '${user}';`;
+    const query = `SELECT attraction, time, confirmation FROM reservations WHERE user = '${user}';`;
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
@@ -275,6 +287,7 @@ function generateReport(user) {
                     let temp = {};
                     temp.attraction = `${info.attractions[row.attraction-1]}`;
                     temp.time = row.time;
+                    temp.confirmation = `${row.confirmation}`;
                     array.push(temp);
                 });
                 resolve(array);
@@ -296,5 +309,6 @@ module.exports = {
     insertRes,
     forbiddenTimes,
     generateReport,
-    changeTime
+    changeTime,
+    getEmail
 };

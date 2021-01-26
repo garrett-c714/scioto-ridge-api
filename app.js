@@ -85,6 +85,22 @@ app.get('/login/v', (request, response) => {
         response.json({session: 'false'});
     })
 });
+app.get('/email', (request, response) => {
+    const sess = request.cookies['loginCookie'];
+    database.validateSession(sess)
+    .then(user => {
+        database.getEmail(user)
+        .then(email => {
+            response.json({success: 'true',email:`${email}`});
+        })
+        .catch(error => {
+            response.json({success: 'false'});
+        })
+    })
+    .catch(error => {
+        response.json({success: 'false'});
+    });
+})
 app.get('/logout', (request, response) => {
     const sess = request.cookies['loginCookie'];
     database.deleteSession(sess)
