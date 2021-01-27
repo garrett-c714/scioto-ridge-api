@@ -188,7 +188,30 @@ app.get('/totalres', (request, response) => {
     });
 });
 app.get('/getres/:id', (request, response) => {
-    //TODO
+    const sess = request.cookies['loginCookie'];
+    const attID = request.params.id;
+    database.validateSession(sess)
+    .then(user => {
+        database.checkIfAdmin(user)
+        .then(() => {
+            database.getResById(attID)
+            .then(array => {
+                response.json({reservations: array});
+            })
+            .catch(error => {
+                console.log(error);
+                response.json({success: 'false'});
+            }); 
+        })
+        .catch(error => {
+            console.log(error);
+            response.json({success: 'false'});
+        });
+    })
+    .catch(error => {
+        console.log(error);
+        response.json({success: 'false'});
+    });
 });
 
 app.get('/attractions', (request, response) => {

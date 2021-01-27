@@ -57,11 +57,19 @@ async function sendWaitTimes() {
     return response;
 }
 const changeTime = (attraction, newTime, isClosed) => {
-    const query = `UPDATE attractions SET wait_time = ${newTime} WHERE att_id = '${attraction}'; UPDATE attractions SET is_closed = ${isClosed} WHERE att_id = '${attraction}';`;
+    const query = `UPDATE attractions SET wait_time = '${newTime}' WHERE att_id = '${attraction}';`;
+    const query2 = `UPDATE attractions SET is_closed = '${isClosed}' WHERE att_id = '${attraction}';`;
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                reject(new Error('update wait time failed'));
+                //reject(new Error('update wait time failed'));
+                throw error;
+            } 
+        });
+        connection.query(query2, (error, result) => {
+            if (error) {
+                //reject(new Error('query2 failure :)'));
+                throw error;
             } else {
                 resolve();
             }
@@ -299,6 +307,7 @@ function generateReport(user) {
                 let array = [];
                 result.forEach(row => {
                     let temp = {};
+                    temp.att_id = `${row.attraction}`;
                     temp.attraction = `${info.attractions[row.attraction-1]}`;
                     temp.time = row.time;
                     temp.confirmation = `${row.confirmation}`;
@@ -323,6 +332,7 @@ function allAtts() {
         });
     });
 }
+/*
 function getRes(attID) {
     const query = `SELECT time, group_size, confirmation FROM reservations WHERE attraction = '${attID}';`;
     return new Promise((resolve, reject) => {
@@ -335,6 +345,7 @@ function getRes(attID) {
         })
     });
 }
+*/
 function getNumRes() {
     let i = 0;
     const query = `SELECT time FROM reservations;`;
@@ -352,9 +363,23 @@ function getNumRes() {
     });
 }
 function getResById(attID) {
+    let resArray = [];
     const query = `SELECT time, group_size, confirmation FROM reservations WHERE attraction = '${attID}'`;
     return new Promise((resolve, reject) => {
-        
+        connection.query(query, (error, result) => {
+            if (error) {
+                throw error;
+            } else {
+                result.forEach(row => {
+                    resArray.push({
+                        time: `${row.time}`,
+                        groupSize: `${row.group_size}`,
+                        confirmation: `${row.confirmation}`
+                    });
+                });
+                resolve(resArray);
+            }
+        });
     });
 }
 
@@ -393,5 +418,6 @@ module.exports = {
     getEmail,
     checkIfAdmin,
     awaitStats,
-    getNumRes
+    getNumRes,
+    getResById
 };
