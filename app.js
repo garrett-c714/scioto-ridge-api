@@ -32,7 +32,7 @@ app.post('/login', (request, response) => {
          database.insertSession(userID)
          .then(session => {
              //console.log('made it here');
-             response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: false}).json({success: 'true'});
+             response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: true, secure: true}).json({success: 'true'});
          })
          .catch(error => {
              console.log('something went wrong');
@@ -52,7 +52,7 @@ app.post('/login/new', (request, response) => {
             database.insertSession(userID)
             .then(session => {
                 console.log('made it here --- login/new');
-                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: false}).json({success: 'true'});
+                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: true, secure: true}).json({success: 'true'});
             })
             .catch(error => {
                 console.log('error login/new -- insert session');
@@ -118,7 +118,7 @@ app.post('/admin-login', (request,response) => {
         .then(userID => {
             database.insertSession(userID)
             .then(session => {
-                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: false}).json({success: 'true'}); 
+                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: true, secure: true}).json({success: 'true'}); 
             })
             .catch(error => {
                 console.log('error with session');
