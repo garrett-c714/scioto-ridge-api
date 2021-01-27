@@ -131,6 +131,20 @@ function login(email, password) {
         });
     });
 }
+const checkIfAdmin = user => {
+    const query = `SELECT id_number, badge FROM admins WHERE id_number = '${user}';`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('admin selection failed'));
+            } else if (result[0].badge == undefined) {
+                reject(new Error('not an admin'));
+            } else {
+                resolve(result[0].id_number);
+            }
+        });
+    });
+}
 function validateSession(sessionID) {
     const query = `SELECT user FROM sessions WHERE session_id = '${sessionID}';`;
     return new Promise((resolve, reject) => {
@@ -295,6 +309,72 @@ function generateReport(user) {
         });
     });
 }
+
+
+function allAtts() {
+    const query = `SELECT name, wait_time, is_closed FROM attractions;`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                throw error;
+            } else {
+                resolve(result);
+            }
+        });
+    });
+}
+function getRes(attID) {
+    const query = `SELECT time, group_size, confirmation FROM reservations WHERE attraction = '${attID}';`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                throw error;
+            } else {
+                resolve(result);
+            }
+        })
+    });
+}
+function getNumRes() {
+    let i = 0;
+    const query = `SELECT time FROM reservations;`;
+    return new Promise((resolve, reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                throw error;
+            } else {
+                result.forEach(row => {
+                    i++;
+                });
+                resolve(i);
+            }
+        })
+    });
+}
+function getResById(attID) {
+    const query = `SELECT time, group_size, confirmation FROM reservations WHERE attraction = '${attID}'`;
+    return new Promise((resolve, reject) => {
+        
+    });
+}
+
+async function awaitStats() {
+    let stupid = {};
+    let temp = {};
+    const x = await allAtts();
+    let i = 1;
+    x.forEach(row => {
+        temp = {
+            name: `${row.name}`,
+            wait_time: `${row.wait_time}`,
+            closed: `${row.is_closed}`
+        };
+        stupid[`index${i}`] = temp;
+        i++;
+    });
+    return stupid;
+}
+
 module.exports = {
     sendWaitTimes,
     insertUser,
@@ -310,5 +390,8 @@ module.exports = {
     forbiddenTimes,
     generateReport,
     changeTime,
-    getEmail
+    getEmail,
+    checkIfAdmin,
+    awaitStats,
+    getNumRes
 };

@@ -76,8 +76,6 @@ app.get('/login/v', (request, response) => {
     database.returnSession(sess)
     .then(user => {
         user.session = 'true';
-        //console.log('made it this far');
-        //console.log(user);
         response.json(user);
     })
     .catch(error => {
@@ -113,29 +111,85 @@ app.get('/logout', (request, response) => {
     })
 });
 
-/*------ Start Protected Routes ------*/
-
-/*app.use((request, response, next) => {
-    if (false) {
-        console.log('security checkpoint passed');
-        next();
-    } else {
-        console.log('caught at security checkpoint');
-        response.status(403).end();
-    }
-});*/
-
-
-/*Test route -- remove later */
-app.get('/cookie', (request, response) => {
-    response.cookie('testCookie', 'value',{sameSite:'none', httpOnly: false}).json({cookie: 'set'});
+app.post('/admin-login', (request,response) => {
+    database.login(request.body.email, request.body.pass)
+    .then(userID => {
+        database.checkIfAdmin(userID)
+        .then(userID => {
+            database.insertSession(userID)
+            .then(session => {
+                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: false}).json({success: 'true'}); 
+            })
+            .catch(error => {
+                console.log('error with session');
+                response.json({success: 'false'});
+            });
+        })
+        .catch(error => {
+            console.log('not an admin');
+            response.json({success: 'false'});
+        })
+    })
+    .catch(error => {
+        console.log('error 1');
+        response.json({success: 'false'});
+    });
 });
-app.get('/cookie/read', (request, response) => {
-    console.log(request.cookies["testCookie"]);
-    response.send('stupid');
+app.get('/admin/v', (request, response) => {
+    const sess = request.cookies["loginCookie"];
+    database.validateSession(sess)
+    .then(user => {
+        database.checkIfAdmin(user)
+        .then(() => {
+            database.awaitStats()
+            .then(data => {
+                response.json(data);
+            })
+            .catch(error => {
+                console.log(error);
+                response.json({success: 'false'});
+            })
+        })
+        .catch(error => {
+            response.json({success: 'false'});
+        });
+    })
+    .catch(error => {
+        response.json({success: 'false'});
+    });
 });
-/*--------------*/
+/* End of login routes */
+/* -------------------*/
 
+/*   Admin Routes   */
+app.get('/totalres', (request, response) => {
+    const sess = request.cookies['loginCookie'];
+    database.validateSession(sess)
+    .then(user => {
+        database.checkIfAdmin(user)
+        .then(() => {
+            database.getNumRes()
+            .then(number => {
+                response.json({total: `${number}`});
+            })
+            .catch(error => {
+                console.log(error);
+                response.json({success: 'false'});
+            }); 
+        })
+        .catch(error => {
+            console.log(error);
+            response.json({success: 'false'});
+        });
+    })
+    .catch(error => {
+        console.log(error);
+        response.json({success: 'false'});
+    });
+});
+app.get('/getres/:id', (request, response) => {
+    //TODO
+});
 
 app.get('/attractions', (request, response) => {
     database.sendWaitTimes()
