@@ -62,14 +62,14 @@ const changeTime = (attraction, newTime, isClosed) => {
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                //reject(new Error('update wait time failed'));
-                throw error;
+                reject(new Error('update wait time failed'));
+                //throw error;
             } 
         });
         connection.query(query2, (error, result) => {
             if (error) {
-                //reject(new Error('query2 failure :)'));
-                throw error;
+                reject(new Error('query2 failure :)'));
+                //throw error;
             } else {
                 resolve();
             }
@@ -81,7 +81,7 @@ function insertUser(newUser) {
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                reject(error);
+                reject(new Error('duplicate email'));
             } else {
                 console.log('Inserted Successfully into Database!');
                 resolve('success');
@@ -235,11 +235,17 @@ function getStarReview(attID) {
 }
 async function insertStarReview(attID, rating) {
     const oldNumbers = await getStarReview(attID);
-    oldNumbers.stars += rating;
+    let x = Number.parseInt(oldNumbers.stars, 10) + rating;
     oldNumbers.reviews++;
-    const query = `UPDATE attraction_reviews SET num_stars = ${oldNumbers.stars} WHERE id = '${attID}'; UPDATE attraction_reviews SET num_reviews = ${oldNumbers.reviews} WHERE id = '${attID}';`;
+    const query = `UPDATE attraction_reviews SET num_stars = ${x} WHERE id = '${attID}';`;
+    const query2 =  `UPDATE attraction_reviews SET num_reviews = ${oldNumbers.reviews} WHERE id = '${attID}';`
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('review insertion failed'));
+            }
+        });
+        connection.query(query2, (error, result) => {
             if (error) {
                 reject(new Error('review insertion failed'));
             } else {
@@ -384,7 +390,7 @@ function getResById(attID) {
 }
 
 async function awaitStats() {
-    let stupid = {};
+    let finalObj = {};
     let temp = {};
     const x = await allAtts();
     let i = 1;
@@ -394,12 +400,31 @@ async function awaitStats() {
             wait_time: `${row.wait_time}`,
             closed: `${row.is_closed}`
         };
-        stupid[`index${i}`] = temp;
+        finalObj[`index${i}`] = temp;
         i++;
     });
-    return stupid;
+    return finalObj;
 }
-
+const getAllReviews = () => {
+    const query = `SELECT * FROM attraction_reviews;`;
+    const revArray = [];
+    return new Promise((resolve,reject) => {
+        connection.query(query, (error, result) => {
+            if (error) {
+                reject(new Error('stars failed'));
+            } else {
+                result.forEach(row => {
+                    let temp = {
+                        attraction: `${row.id}`,
+                        rating: `${Math.round(Number.parseInt(row.num_stars, 10) / Number.parseInt(row.num_reviews, 10))}`
+                    };
+                    revArray.push(temp);
+                });
+                resolve(revArray);
+            }
+        });
+    });
+}
 module.exports = {
     sendWaitTimes,
     insertUser,
@@ -419,5 +444,6 @@ module.exports = {
     checkIfAdmin,
     awaitStats,
     getNumRes,
-    getResById
+    getResById,
+    getAllReviews
 };

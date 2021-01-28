@@ -40,7 +40,6 @@ app.post('/login', (request, response) => {
      })
      .catch(error => {
          console.log('incorrect');
-         console.log(error);
          response.json({success: 'false'});
      });
   });
@@ -62,7 +61,7 @@ app.post('/login/new', (request, response) => {
         })
         .catch(error => {
             console.log('error login/new -- login');
-            console.log(error);
+            //console.log(error);
             response.json({success: 'false'});
         });
     })
@@ -248,12 +247,9 @@ app.post('/change-attraction', (request, response) => {
 });
 
 
-app.get('/review', (request, response) => {
-    response.send('You have reached the review page.');
-});
-app.post('/review/:id', (request, response) => {
-    const attID = request.params.id;
-    const rating = request.body.rating;
+app.post('/review', (request, response) => {
+    const attID = Number.parseInt(request.body.id, 10);
+    const rating = Number.parseInt(request.body.rating, 10);
     database.insertStarReview(attID, rating)
     .then(z => {
         response.json({success: 'true'})
@@ -275,6 +271,13 @@ app.get('/review/get/:id', (request, response) => {
         response.json({success: 'false'});
     });
 });
+app.get('/stars',(request, response) => {
+    database.getAllReviews()
+    .then(array => {
+        response.json({ratings: array});
+    });
+});
+
 app.post('/reserve', (request, response) => {
     const sess = request.cookies["loginCookie"];
     const att = request.body.attraction;
