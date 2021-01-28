@@ -110,7 +110,8 @@ app.get('/logout', (request, response) => {
 });
 
 app.post('/admin-login', (request,response) => {
-    database.login(request.body.email, request.body.pass)
+    const pass = info.cipher(request.body.pass);
+    database.login(request.body.email, pass)
     .then(userID => {
         database.checkIfAdmin(userID)
         .then(userID => {
