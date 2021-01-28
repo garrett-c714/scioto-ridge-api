@@ -255,7 +255,7 @@ async function insertStarReview(attID, rating) {
     });
 }
 const generateConfirmation = () => {
-    return `${Math.round(Math.random()*899+100)}-${Math.round(Math.random()*899+1)}`;
+    return `${Math.round(Math.random()*899+100)}-${Math.round(Math.random()*899+100)}`;
 }
 function insertRes(user, attraction, time, groupSize) {
     const confirmation = generateConfirmation();
