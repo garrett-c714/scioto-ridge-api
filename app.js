@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser('multimedians21'));
 app.use((request, response, next) => {
-    response.setHeader('Access-Control-Allow-Origin','http://localhost:8080');
+    response.setHeader('Access-Control-Allow-Origin','https://efctsmultimedians.com');
     response.setHeader('Access-Control-Allow-Methods', 'GET,POST');
     response.setHeader('Access-Control-Allow-Headers','content-type');
     response.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -19,9 +19,6 @@ app.use((request, response, next) => {
 
 app.get('/', (request, response) => {
     response.send('Scioto Ridge API');
-});
-app.get('/test', (request, response) => {
-    response.send('test complete');
 });
 
 app.post('/login', (request, response) => {
@@ -33,14 +30,14 @@ app.post('/login', (request, response) => {
          database.insertSession(userID)
          .then(session => {
              //console.log('made it here');
-             response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: true}).json({success: 'true'});
+             response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: true, secure: true}).json({success: 'true'});
          })
          .catch(error => {
              console.log('something went wrong');
+             response.json({success: 'false'});
          });
      })
      .catch(error => {
-         console.log('incorrect');
          response.json({success: 'false'});
      });
   });
@@ -52,23 +49,23 @@ app.post('/login/new', (request, response) => {
         .then((userID) => {
             database.insertSession(userID)
             .then(session => {
-                console.log('made it here --- login/new');
-                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: true}).json({success: 'true'});
+                //console.log('made it here --- login/new');
+                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: true, secure: true}).json({success: 'true'});
             })
             .catch(error => {
-                console.log('error login/new -- insert session');
-                console.log(error);
+                //console.log('error login/new -- insert session');
+                //console.log(error);
                 response.json({success: 'false'});
             });
         })
         .catch(error => {
-            console.log('error login/new -- login');
+            //console.log('error login/new -- login');
             //console.log(error);
             response.json({success: 'false'});
         });
     })
     .catch(err => {
-        console.log(err);
+        //console.log(err);
         response.json({success: 'false'});
     });
 });
@@ -80,7 +77,7 @@ app.get('/login/v', (request, response) => {
         response.json(user);
     })
     .catch(error => {
-        console.log('login not validated');
+        //console.log('login not validated');
         response.json({session: 'false'});
     })
 });
@@ -107,7 +104,7 @@ app.get('/logout', (request, response) => {
         response.json({success: 'true'});
     })
     .catch(error => {
-        console.log(error);
+        //console.log(error);
         response.json({success: 'false'});
     })
 });
@@ -119,20 +116,20 @@ app.post('/admin-login', (request,response) => {
         .then(userID => {
             database.insertSession(userID)
             .then(session => {
-                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: true}).json({success: 'true'}); 
+                response.cookie('loginCookie', `${session}`,{sameSite:'none', httpOnly: true, secure: true}).json({success: 'true'}); 
             })
             .catch(error => {
-                console.log('error with session');
+                //console.log('error with session');
                 response.json({success: 'false'});
             });
         })
         .catch(error => {
-            console.log('not an admin');
+            //console.log('not an admin');
             response.json({success: 'false'});
         })
     })
     .catch(error => {
-        console.log('error 1');
+        //console.log('error 1');
         response.json({success: 'false'});
     });
 });
@@ -174,17 +171,17 @@ app.get('/totalres', (request, response) => {
                 response.json({total: `${number}`});
             })
             .catch(error => {
-                console.log(error);
+                //console.log(error);
                 response.json({success: 'false'});
             }); 
         })
         .catch(error => {
-            console.log(error);
+            //console.log(error);
             response.json({success: 'false'});
         });
     })
     .catch(error => {
-        console.log(error);
+        //console.log(error);
         response.json({success: 'false'});
     });
 });
@@ -200,17 +197,17 @@ app.get('/getres/:id', (request, response) => {
                 response.json({reservations: array});
             })
             .catch(error => {
-                console.log(error);
+                //console.log(error);
                 response.json({success: 'false'});
             }); 
         })
         .catch(error => {
-            console.log(error);
+            //console.log(error);
             response.json({success: 'false'});
         });
     })
     .catch(error => {
-        console.log(error);
+        //console.log(error);
         response.json({success: 'false'});
     });
 });
@@ -243,7 +240,7 @@ app.post('/change-attraction', (request, response) => {
         response.json({success: 'true'});
     })
     .catch(error => {
-        console.log(error);
+        //console.log(error);
         response.json({success: 'false'});
     });
 });
@@ -257,7 +254,7 @@ app.post('/review', (request, response) => {
         response.json({success: 'true'})
     })
     .catch(error => {
-        console.log('error');
+        //console.log('error');
         response.json({success: 'false'});
     })
 });
@@ -269,7 +266,7 @@ app.get('/review/get/:id', (request, response) => {
         response.json(numbers);
     })
     .catch(error => {
-        console.log(error);
+        //console.log(error);
         response.json({success: 'false'});
     });
 });
@@ -292,7 +289,7 @@ app.post('/reserve', (request, response) => {
             response.json({success: 'true',confirmation: `${conf}`});
         })
         .catch(error => {
-            console.log(error);
+            //console.log(error);
             response.json({success: 'false'});
         });
     });
@@ -314,12 +311,12 @@ app.get('/reserve/forbidden', (request, response) => {
             response.json({success:'true',unavailableTimes: times});
         })
         .catch(error => {
-            console.log(error);
+            //console.log(error);
             response.json({success: 'false'});
         });
     })
     .catch(error => {
-        console.log(error);
+        //console.log(error);
         response.json({success: 'false'});
     });
 });
@@ -339,7 +336,7 @@ app.get('/report', (request, response) => {
         });
     })
     .catch(error => {
-        console.log(error);
+        //console.log(error);
         response.json({success: 'false'});
     })
 });
