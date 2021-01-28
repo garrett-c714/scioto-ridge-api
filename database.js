@@ -76,8 +76,8 @@ const changeTime = (attraction, newTime, isClosed) => {
         });
     });
 }
-function insertUser(newUser) {
-    const query = `INSERT INTO users (first_name, last_name, email, password) VALUES ('${newUser.fName}', '${newUser.lName}', '${newUser.email}','${newUser.password}');`
+function insertUser(fName, lName, email, password) {
+    const query = `INSERT INTO users (first_name, last_name, email, password) VALUES ('${fName}', '${lName}', '${email}','${password}');`
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {

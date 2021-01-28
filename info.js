@@ -2,7 +2,22 @@ const reserveTimes = ['11:00','11:10','11:20','11:30','11:40', '11:50', '12:00',
 
 const attractions = ['Roller Coaster','Ferris Wheel','Swings','Rocket Ship','Sling Shot','Haunted Castle Ride','Parachute Drop','Merry-Go-Round','Antique Cars','Cage Ride','Train','Boats','Chuck Wagon','Dogs to Go','Chickens-R-Us','Easy as Pie Diner','Forever Cool Ice Cream'];
 
+const cipher = salt => {
+    const textToChars = text => text.split('').map(c => c.charCodeAt(0));
+    const byteHex = n => ("0" + Number(n).toString(16)).substr(-2);
+    const applySaltToChar = code => textToChars(salt).reduce((a,b) => a ^ b, code);
+
+    return text => text.split('')
+        .map(textToChars)
+        .map(applySaltToChar)
+        .map(byteHex)
+        .join('');
+}
+
+const encoder = cipher('lolalynx');
+
 module.exports = {
     reserveTimes,
-    attractions
+    attractions,
+    encoder
 }

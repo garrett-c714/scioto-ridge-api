@@ -26,7 +26,8 @@ app.get('/test', (request, response) => {
 
 app.post('/login', (request, response) => {
      console.log('login request');
-     database.login(request.body.email, request.body.pass)
+     const pass = info.encoder(request.body.pass);
+     database.login(request.body.email, pass)
      .then(userID => {
          //console.log('made it this far');
          database.insertSession(userID)
@@ -44,9 +45,10 @@ app.post('/login', (request, response) => {
      });
   });
 app.post('/login/new', (request, response) => {
-    database.insertUser(request.body)
+    const pass = info.encoder(request.body.password);
+    database.insertUser(request.body.fName, request.body.lName, request.body.email, pass)
     .then(() => {
-        database.login(request.body.email, request.body.password)
+        database.login(request.body.email, pass)
         .then((userID) => {
             database.insertSession(userID)
             .then(session => {
