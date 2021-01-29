@@ -168,7 +168,7 @@ const checkIfAdmin = user => {
         connection.query(query, (error, result) => {
             if (error) {
                 reject(new Error('admin selection failed'));
-            } else if (result[0].badge == undefined) {
+            } else if (result[0] == undefined) {
                 reject(new Error('not an admin'));
             } else {
                 resolve(result[0].id_number);
