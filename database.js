@@ -296,8 +296,8 @@ function insertRes(user, attraction, time, groupSize) {
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                //reject(new Error('insertion failed'));
-                throw error;
+                reject(new Error('insertion failed'));
+                //throw error;
             } else {
                 resolve(confirmation);
             }
@@ -370,7 +370,8 @@ function allAtts() {
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                throw error;
+                //throw error;
+                reject(new Error('all atts'));
             } else {
                 resolve(result);
             }
@@ -399,7 +400,8 @@ function getNumRes() {
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                throw error;
+                //throw error;
+                reject(new Error('get Num Res'));
             } else {
                 result.forEach(row => {
                     i++;
@@ -416,7 +418,8 @@ function getResById(attID) {
     return new Promise((resolve, reject) => {
         connection.query(query, (error, result) => {
             if (error) {
-                throw error;
+                //throw error;
+                reject(new Error('res by ID'));
             } else {
                 result.forEach(row => {
                     resArray.push({
