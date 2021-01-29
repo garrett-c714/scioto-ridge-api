@@ -146,7 +146,7 @@ app.get('/admin/v', (request, response) => {
                 response.json(data);
             })
             .catch(error => {
-                console.log(error);
+                //console.log(error);
                 response.json({success: 'false'});
             })
         })
