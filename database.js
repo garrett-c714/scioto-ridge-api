@@ -13,6 +13,14 @@ const sql = require('mysql');
 const database = process.env.JAWSDB_URL || creds.database;
 const connection = sql.createConnection(database);
 
+/*This file contains the functions for accessing the database. Each route in app.js
+calls one or more of these functions to perform actions in the database */
+
+
+
+
+/*Connects the database. Credentials are stored in an environment
+vairable in the host server */
 connection.connect((error) => {
     if (error) {
         throw error;
@@ -20,6 +28,8 @@ connection.connect((error) => {
     console.log('Connected to Database!');
 });
 
+/*Selects the wait times from the database, through a series of steps, that 
+data is turned into JSON and returned with the http response */
 function selectWaitTimes() {
     const query = "SELECT name, wait_time, att_id FROM attractions;";
     return new Promise((resolve, reject) => {
@@ -56,6 +66,10 @@ async function sendWaitTimes() {
     });
     return response;
 }
+
+/*This function updates the attraction status and wait time when an admin modifies the 
+data on the frontend. */
+
 const changeTime = (attraction, newTime, isClosed) => {
     const query = `UPDATE attractions SET wait_time = '${newTime}' WHERE att_id = '${attraction}';`;
     const query2 = `UPDATE attractions SET is_closed = '${isClosed}' WHERE att_id = '${attraction}';`;
@@ -76,6 +90,9 @@ const changeTime = (attraction, newTime, isClosed) => {
         });
     });
 }
+
+/*inserts a new user into the database. If the email is already in use
+the promise will reject, and will be caught by the route in app.js */
 function insertUser(fName, lName, email, password) {
     const query = `INSERT INTO users (first_name, last_name, email, password) VALUES ('${fName}', '${lName}', '${email}','${password}');`
     return new Promise((resolve, reject) => {
@@ -83,7 +100,7 @@ function insertUser(fName, lName, email, password) {
             if (error) {
                 reject(new Error('duplicate email'));
             } else {
-                console.log('Inserted Successfully into Database!');
+                //console.log('Inserted Successfully into Database!');
                 resolve('success');
             }
         });
@@ -102,6 +119,7 @@ const getEmail = user => {
         });
     });
 }
+/*generates the random session ID */
 function generateSession() {
     return Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
 }
@@ -113,13 +131,16 @@ function insertSession(userID) {
         console.log(`${session} inserted into database`);
         connection.query(query, (error, result) => {
             if (error) {
-                throw error;
+                //throw error;
+                reject(new Error('session insertion'));
             }
         });
         resolve(session);
     });
 }
 
+/*validates credentials with the data from the login request. User passwords are encrypted
+in the database */
 function login(email, password) {
     const query = `SELECT password, user_id FROM users WHERE email = '${email}';`;
     return new Promise((resolve,reject) => {
@@ -139,6 +160,8 @@ function login(email, password) {
         });
     });
 }
+/*compares user request to the admin table to determine permission to access certain 
+functions */
 const checkIfAdmin = user => {
     const query = `SELECT id_number, badge FROM admins WHERE id_number = '${user}';`;
     return new Promise((resolve, reject) => {
@@ -153,6 +176,9 @@ const checkIfAdmin = user => {
         });
     });
 }
+/*validates the session with the sessionId passed into it, if no session is present 
+the promise rejects, and the route will send that there is no active session to the 
+Frontend */
 function validateSession(sessionID) {
     const query = `SELECT user FROM sessions WHERE session_id = '${sessionID}';`;
     return new Promise((resolve, reject) => {
@@ -167,6 +193,8 @@ function validateSession(sessionID) {
         });
     });
 }
+
+/*selects user data when given a session ID*/
 function returnSession(sessionID) {
     return new Promise((resolve, reject) => {
         validateSession(sessionID)
@@ -190,6 +218,7 @@ function returnSession(sessionID) {
         });
     });
 }
+/*deletes session from the database upon logout */
 function deleteSession(sessionID) {
     const query = `DELETE FROM sessions WHERE session_id = '${sessionID}'`;
     return new Promise((resolve, reject) => {
@@ -233,6 +262,8 @@ function getStarReview(attID) {
         });
     });
 }
+
+/* inserts new star reviews for attractions in the database */
 async function insertStarReview(attID, rating) {
     const oldNumbers = await getStarReview(attID);
     let x = Number.parseInt(oldNumbers.stars, 10) + rating;
@@ -254,9 +285,11 @@ async function insertStarReview(attID, rating) {
         });
     });
 }
+/*responsible for generating the confirmation codes for reservations */
 const generateConfirmation = () => {
     return `${Math.round(Math.random()*899+100)}-${Math.round(Math.random()*899+100)}`;
 }
+/* inserts reservation data into the reservations table in the database */
 function insertRes(user, attraction, time, groupSize) {
     const confirmation = generateConfirmation();
     const query = `INSERT INTO reservations (user, attraction, time, group_size, confirmation) VALUES ('${user}', '${attraction}','${time}','${groupSize}','${confirmation}');`;
@@ -271,6 +304,9 @@ function insertRes(user, attraction, time, groupSize) {
         });
     });
 }
+
+/*goes through the reservations table, and finds all of the time slots the user
+has placed a reservation. */
 function findTimes(user) {
     const query = `SELECT time FROM reservations WHERE user = '${user}';`;
     let times = [];
@@ -289,6 +325,9 @@ function findTimes(user) {
       });  
     }); 
 }
+
+/* gernates an array of times that the user cannot reserve an attraction, based on what 
+time slots they have already placed a reservation at. */
 async function forbiddenTimes(user) {
     const times = await findTimes(user);
     const indexes = [];
@@ -302,7 +341,7 @@ async function forbiddenTimes(user) {
     return indexes;
 }
 
-
+/*generates the itinerary report for a user */
 function generateReport(user) {
     const query = `SELECT attraction, time, confirmation FROM reservations WHERE user = '${user}';`;
     return new Promise((resolve, reject) => {
@@ -352,6 +391,8 @@ function getRes(attID) {
     });
 }
 */
+
+/* gets the total number of reservations for the park stats report */
 function getNumRes() {
     let i = 0;
     const query = `SELECT time FROM reservations;`;
@@ -368,6 +409,7 @@ function getNumRes() {
         })
     });
 }
+/*gets all the active reservations for a specific attraction, looked up by its ID# */
 function getResById(attID) {
     let resArray = [];
     const query = `SELECT time, group_size, confirmation FROM reservations WHERE attraction = '${attID}'`;
@@ -405,6 +447,8 @@ async function awaitStats() {
     });
     return finalObj;
 }
+
+/* generates an arrray of the star rating for every attraction */
 const getAllReviews = () => {
     const query = `SELECT * FROM attraction_reviews;`;
     const revArray = [];
@@ -425,6 +469,9 @@ const getAllReviews = () => {
         });
     });
 }
+
+/*exports the necessary functions so that they can be called by
+app.js */
 module.exports = {
     sendWaitTimes,
     insertUser,
