@@ -142,6 +142,7 @@ app.get('/admin/v', (request, response) => {
         .then(() => {
             database.awaitStats()
             .then(data => {
+                data.success = 'true';
                 response.json(data);
             })
             .catch(error => {
